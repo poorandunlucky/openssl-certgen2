@@ -1,0 +1,264 @@
+################################################################################
+# OpenSSL Configuration File
+# ==============================================================================
+# Configures the OpenSSL certificate management tooklit.
+# ------------------------------------------------------------------------------
+# Information, usage, notes, etc.
+# ==============================================================================
+
+#
+# Module Configuration
+
+[ req ]
+
+default_bits = 4096
+defailt_md = sha256
+RANDFILE = /dev/randomhy
+string_mask = utf8only
+distinguished_name = req_info_template
+attributes = req_info_attributes
+req_extensions = x509_open
+
+# default_keyfile = privkey.pem
+# input_password = secret
+# output_password = secret
+
+[ req_info_template ]
+
+countryName = Country Code
+countryName_default = CA
+countryName_min = 2
+countryName_max = 2
+stateOrProvinceName = State or Province Name
+stateOrProvinceName_default = QC
+localityName = Locality Name
+localityName_default = Montréal
+
+0.organizationName = Organization Name
+0.organizationName_default = Patrick Dorion
+#1.organizationName = Second Organization Name (eg, company)
+#1.organizationName_default = World Wide Web Pty Ltd
+organizationalUnitName = Department
+organizationalUnitName_default = SSL/TLS Certificate Management
+commonName = FQDN or User Name
+commonName_max = 64
+commonName_default = OpenSSL Certificate
+emailAddress = Contact E-mail
+emailAddress_max = 64
+emailAddress_default = dorionpatrick@outlook.com
+
+[ req_info_attributes ]
+
+challengePassword = Challenge password for request access
+challengePassword_min = 4
+challengePassword_max = 32
+
+unstructuredName = Optional name, note, or comment
+unstructuredName_default = OpenSSL Certificate Request
+
+[ ca ]
+
+default_ca = ca_config_default
+RANDFILE = /dev/random
+
+[ ca_config_default ]
+
+dir = ./
+certs = $dir/
+crl_dir = $dir/
+new_certs_dir = $dir/
+database = $dir/.openssl/ca.db.index
+serial = $dir/.openssl/ca.db.serial
+crlnumber = $dir/.openssl/ca.db.crl
+
+default_days = 1461
+default_crl_days = 1
+default_md = sha256
+unique_subject = no
+preserve = yes
+
+# certificate = $dir/cacert.pem
+# crl = $dir/crl.pem
+# private_key = $dir/cakey.pem
+
+policy = ca_policy_open
+x509_extensions = x509_open
+
+[ ca_policy_authorities ]
+
+countryName = match
+stateOrProvinceName = match
+localityName = match
+organizationName = match
+organizationalUnitName = optional
+commonName = supplied
+emailAddress = optional
+
+[ ca_policy_services ]
+
+countryName = optional
+stateOrProvinceName = optional
+localityName = optional
+organizationName = match
+organizationalUnitName = optional
+commonName = supplied
+emailAddress = optional
+
+[ ca_policy_users ]
+
+countryName = optional
+stateOrProvinceName = optional
+localityName = optional
+organizationName = match
+organizationalUnitName = match
+commonName = supplied
+emailAddress = optional
+
+[ ca_policy_open ]
+
+countryName = optional
+stateOrProvinceName = optional
+localityName = optional
+organizationName = optional
+organizationalUnitName = optional
+commonName = supplied
+emailAddress = optional
+
+[ tsa ]
+
+default_tsa = tsa_config_default
+
+[ tsa_config_default ]
+
+dir = .
+serial = $dir/.openssl/tsa.db.serial
+crypto_device = builtin
+signer_digest = sha256
+digests = sha1, sha256, sha384, sha512
+accuracy = secs:1, millisecs:500, microsecs:100
+clock_precision_digits = 0
+ordering = yes
+tsa_name = yes
+ess_cert_id_chain = no
+
+#signer_cert = $dir/tsacert.pem
+#certs = $dir/cacert.pem
+#signer_key = $dir/tsakey.pem
+
+default_policy = tsa_policy_default
+#other_policies = tsa_policy_01, tsa_policy_02
+
+tsa_policy_default = 1.2.3.4.1
+tsa_policy_02 = 1.2.3.4.5.6
+tsa_policy_03 = 1.2.3.4.5.7
+
+#
+# x509 Profiles
+
+[ x509_ca_root ]
+
+basicConstraints = critical, CA:TRUE
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always, issuer:always
+keyUsage = critical, cRLSign, digitalSignature, keyCertSign
+# crlDistributionPoints = crl_default
+#subjectAltName = @x509_ca_root
+
+[ x509_ca_issuing ]
+
+basicConstraints = critical, CA:TRUE, pathlen:1
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always, issuer:always
+keyUsage = critical, cRLSign, digitalSignature, keyCertSign
+# crlDistributionPoints = crl_default
+#subjectAltName = @x509_ca_issuing
+
+[ x509_ca_service ]
+
+basicConstraints = critical, CA:TRUE, pathlen:0
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always, issuer:always
+keyUsage = critical, cRLSign, digitalSignature, keyCertSign
+# crlDistributionPoints = crl_default
+#subjectAltName = @x509_ca_service
+
+[ x509_server_default ]
+
+basicConstraints = critical, CA:FALSE
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always, issuer:always
+keyUsage = critical, nonRepudiation, digitalSignature, keyEncipherment, keyAgreement
+extendedKeyUsage = critical, serverAuth
+# crlDistributionPoints = crl_default
+#subjectAltName = @x509_server_default
+
+[ x509_proxy_default ]
+
+basicConstraints = critical, CA:FALSE
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always, issuer:always
+keyUsage = critical, nonRepudiation, digitalSignature, keyEncipherment, keyAgreement
+extendedKeyUsage = critical, serverAuth
+proxyCertInfo = critical, language:id-ppl-anyLanguage, pathlen:3, policy:default			# Line not configured
+# crlDistributionPoints = crl_default
+#subjectAltName = @x509_proxy_default
+
+[ x509_user_default ]
+
+basicConstraints = critical, CA:FALSE
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always, issuer:always
+keyUsage = critical, nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage = critical, clientAuth, emailProtection
+# crlDistributionPoints = crl_default
+#subjectAltName = @x509_user_default
+#subjectAltName = email:copy
+
+[ x509_codesign_default ]
+
+basicConstraints = critical, CA:FALSE
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always, issuer:always
+keyUsage = critical, nonRepudiation, digitalSignature
+extendedKeyUsage = critical, codeSigning, msCodeInd, msCodeCom, mcCTLSign, timeStamping
+# crlDistributionPoints = crl_default
+#subjectAltName = @x509_codesign_default
+
+[ x509_open ]
+
+basicConstraints = critical, CA:FALSE
+subjectKeyIdentifier = hash
+
+#
+# CRL Stuff (Not Fully Implemented)
+
+[ x509_crl_default ]
+
+issuerAltName = issuer:copy
+authorityKeyIdentifier = keyid:always, issuer:always
+
+[ crl_default ]
+
+fullname = URI:http://www.hostname.tld/crl.pem
+CRLissuer = dirName:crl_issuer_default
+reasons = superceded, affiliationChanged, privilegeWithdrawn, certificateHold, removeFromCRL, cessationOfOperations, keyCompromise, cACompromise, aACompromise, unspecified
+
+[ crl_issuer_default ]
+
+O = Patrick Dorion
+OU = SSL/TLS Certificate Management
+CN = OpenSSL CRL
+
+#
+# OIDs (Not Implemented)
+
+# oid_file = $ENV::HOME/.oid
+oid_section = oids_default
+
+[ oids_default ]
+
+# testoid = 1.2.3.4
+
+# ==============================================================================
+# Patrick Dorion <dorionpatrick@outlook.com>                            May 2019
+################################################################################
